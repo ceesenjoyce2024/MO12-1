@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Rosmalen MO12-1 — Hockey Stats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1A9E6E;
+    --green-dark: #0F6E4A;
+    --green-light: #D6F5EA;
+    --green-mid: #52C99A;
+    --amber: #E8A020;
+    --amber-light: #FEF3DC;
+    --red: #DC4B4B;
+    --red-light: #FDEAEA;
+    --blue: #2A7FD4;
+    --blue-light: #E6F1FB;
+    --bg: #F5F7F5;
+    --surface: #FFFFFF;
+    --surface2: #F0F4F1;
+    --border: rgba(0,0,0,0.08);
+    --border-strong: rgba(0,0,0,0.14);
+    --text: #1A1F1A;
+    --text2: #5A6A5A;
+    --text3: #9AAA9A;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+  /* HEADER */
+  .header {
+    background: var(--green-dark);
+    padding: 0 1.5rem;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  }
+  .header-inner {
+    max-width: 960px; margin: 0 auto;
+    display: flex; align-items: center; gap: 14px;
+    height: 58px;
+  }
+  .logo {
+    width: 36px; height: 36px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 16px; color: #fff;
+    flex-shrink: 0;
+  }
+  .header-title { color: #fff; }
+  .header-title h1 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; line-height: 1.1; }
+  .header-title p { font-size: 12px; opacity: .65; margin-top: 1px; }
+  .header-status { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,0.7); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #5DCAA5; }
+
+  /* NAV */
+  .nav-wrap { background: var(--surface); border-bottom: 1px solid var(--border); overflow-x: auto; }
+  .nav {
+    max-width: 960px; margin: 0 auto;
+    display: flex; padding: 0 1rem;
+  }
+  .nav-btn {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 14px 16px;
+    border: none; background: none;
+    color: var(--text2); cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color .15s;
+  }
+  .nav-btn.active { color: var(--green); border-bottom-color: var(--green); }
+  .nav-btn:hover:not(.active) { color: var(--text); }
+  .nav-btn.invoer-btn {
+    margin-left: auto;
+    color: var(--green);
+    display: flex; align-items: center; gap: 5px;
+  }
+
+  /* MAIN */
+  .main { max-width: 960px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+
+  /* SECTION */
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* METRIC GRID */
+  .metric-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px; margin-bottom: 1.5rem;
+  }
+  .metric {
+    background: var(--surface);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    padding: 14px 12px;
+  }
+  .metric-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+  .metric-value { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700; color: var(--text); }
+  .metric-value.green { color: var(--green); }
+  .metric-value.red { color: var(--red); }
+  .metric-value.amber { color: var(--amber); }
+  .metric-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    padding: 1.25rem;
+    margin-bottom: 14px;
+  }
+  .card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text2); }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 600;
+    color: var(--text3); text-transform: uppercase; letter-spacing: .05em;
+    padding: 6px 10px; border-bottom: 1px solid var(--border);
+  }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--bg); }
+  .score { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+  .badge {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    padding: 2px 8px; border-radius: 20px; letter-spacing: .03em;
+  }
+  .badge-W { background: var(--green-light); color: var(--green-dark); }
+  .badge-G { background: var(--amber-light); color: #8B5E0A; }
+  .badge-V { background: var(--red-light); color: #8B1A1A; }
+  .badge-sc { background: var(--green-light); color: var(--green-dark); font-size: 10px; }
+  .badge-assist { background: var(--blue-light); color: #0F4A8B; font-size: 10px; }
+  .rank { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700; color: var(--text3); }
+  .rank.gold { color: #C8960A; }
+  .rank.silver { color: #888; }
+  .rank.bronze { color: #A0522D; }
+
+  /* TAB BAR */
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 1rem; }
+  .tab-btn {
+    font-size: 12px; font-weight: 500; padding: 6px 14px;
+    border-radius: 20px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text2); cursor: pointer;
+    transition: all .15s;
+  }
+  .tab-btn.active { background: var(--green); border-color: var(--green); color: #fff; }
+
+  /* COMP HEADER */
+  .comp-header {
+    display: flex; align-items: flex-end; gap: 12px;
+    margin-bottom: 1.25rem;
+  }
+  .comp-title { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; }
+  .comp-sub { font-size: 13px; color: var(--text2); margin-bottom: 3px; }
+
+  /* FORM */
+  .form-section { margin-bottom: 1.5rem; }
+  .form-section-title {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--text3); margin-bottom: 10px;
+    padding-bottom: 6px; border-bottom: 1px solid var(--border);
+  }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 12px; font-weight: 500; color: var(--text2); }
+  .form-group input, .form-group select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; padding: 9px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--text);
+    outline: none; transition: border-color .15s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--green); }
+  .btn-primary {
+    font-family: 'DM Sans', sans-serif; font-weight: 500;
+    background: var(--green); color: #fff;
+    border: none; padding: 11px 24px;
+    border-radius: var(--radius-sm); font-size: 15px;
+    cursor: pointer; transition: background .15s;
+  }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-sm {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; padding: 6px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface2); color: var(--text2);
+    cursor: pointer; transition: background .15s;
+  }
+  .btn-sm:hover { background: var(--surface); }
+  .btn-danger {
+    font-size: 12px; padding: 5px 10px;
+    border: 1px solid var(--red-light);
+    border-radius: var(--radius-sm);
+    background: var(--red-light); color: var(--red);
+    cursor: pointer;
+  }
+  .goal-row {
+    background: var(--surface2); border-radius: var(--radius-sm);
+    padding: 10px 12px; margin-bottom: 8px;
+    display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  }
+  .goal-row select { font-size: 13px; padding: 6px 10px; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface); color: var(--text); }
+  .sc-toggle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text2); cursor: pointer; }
+  .sc-toggle input { width: 15px; height: 15px; accent-color: var(--green); }
+  .empty { text-align: center; padding: 2rem 0; color: var(--text3); font-size: 13px; }
+
+  /* TOTAAL COMP TABLE */
+  .comp-row-name { font-weight: 500; }
+  td.pos { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--text3); }
+
+  /* SPELERS */
+  .speler-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; border-bottom: 1px solid var(--border);
+  }
+  .speler-item:last-child { border-bottom: none; }
+  .speler-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--green-light); color: var(--green-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 600; flex-shrink: 0;
+  }
+  .loading {
+    position: fixed; inset: 0; background: var(--bg);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 12px; z-index: 999;
+  }
+  .spinner {
+    width: 36px; height: 36px; border: 3px solid var(--border);
+    border-top-color: var(--green); border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    background: var(--text); color: #fff;
+    padding: 10px 20px; border-radius: var(--radius-sm);
+    font-size: 13px; z-index: 200;
+    animation: fadeInUp .2s ease;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  @keyframes fadeInUp { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+  .page-title {
+    font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+  .per-comp-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 1.5rem;
+  }
+  .per-comp-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px;
+    cursor: pointer; transition: border-color .15s;
+  }
+  .per-comp-card:hover { border-color: var(--green); }
+  .per-comp-card h4 { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+  .per-comp-stats { display: flex; gap: 12px; font-size: 12px; }
+  .pcs-val { font-weight: 600; font-family: 'Syne', sans-serif; }
+  .pcs-lbl { color: var(--text3); font-size: 11px; }
+  .firebase-setup { max-width: 560px; margin: 0 auto; }
+  .modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;display:flex;align-items:center;justify-content:center;padding:1rem; }
+  .modal { background:var(--surface);border-radius:var(--radius);padding:1.5rem;width:100%;max-width:500px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,0.2); }
+  .modal-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem; }
+  .modal-title { font-family:'Syne',sans-serif;font-size:16px;font-weight:700; }
+  .stand-table td.rosmalen { background: rgba(26,158,110,0.07); font-weight: 600; }
+  .stand-table tr.rosmalen-row td { background: rgba(26,158,110,0.07); }
+  .stand-pos { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--text3); }
+  .stand-pos.p1 { color: #C8960A; }
+  .stand-pos.p2 { color: #888; }
+  .stand-pos.p3 { color: #A0522D; }
+  .poule-invoer { background: var(--surface2); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 10px; }
+  .poule-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 6px; }
+  .poule-row input, .poule-row select { font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 6px 10px; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface); color: var(--text); }
+  .poule-row input.score-in { width: 52px; text-align: center; font-family: 'Syne', sans-serif; font-weight: 700; }
+  .vs-label { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; color: var(--text3); }
+  .firebase-setup h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: .5rem; }
+  .firebase-setup p { color: var(--text2); font-size: 14px; line-height: 1.6; margin-bottom: 1rem; }
+  .firebase-setup ol { color: var(--text2); font-size: 14px; line-height: 1.9; padding-left: 1.25rem; margin-bottom: 1.25rem; }
+  .firebase-setup ol a { color: var(--green); }
+  .setup-input { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 12px; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); margin-bottom: 8px; }
+  code { font-family: monospace; font-size: 12px; background: var(--surface2); padding: 2px 6px; border-radius: 4px; }
+  @media (max-width: 600px) {
+    .metric-grid { grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 1rem; }
+    .metric { padding: 8px 8px; }
+    .metric-label { font-size: 10px; margin-bottom: 3px; }
+    .metric-value { font-size: 18px; }
+    .metric-sub { font-size: 10px; }
+    .form-grid { grid-template-columns: 1fr 1fr; }
+    th.hide-mob, td.hide-mob { display: none; }
+    .header-inner { gap: 10px; }
+    .totaal-ranglijst { font-size: 11px; }
+    .totaal-ranglijst td, .totaal-ranglijst th { padding: 5px 4px; }
+    .totaal-ranglijst .stand-pos { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="loading" id="loading">
+  <div class="spinner"></div>
+  <p style="font-size:14px;color:var(--text2)">Gegevens laden…</p>
+</div>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="logo">🏑</div>
+    <div class="header-title">
+      <h1>Rosmalen MO12-1</h1>
+
+    </div>
+    <div class="header-status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">–</span>
+    </div>
+  </div>
+</header>
+
+<div class="nav-wrap">
+  <nav class="nav" id="mainNav">
+    <button class="nav-btn active" onclick="showSection('totaal')">Totaal</button>
+    <button class="nav-btn" onclick="showSection('voorcomp')">Voorcomp.</button>
+    <button class="nav-btn" onclick="showSection('najaarscomp')">Najaarscomp.</button>
+    <button class="nav-btn" onclick="showSection('zaalcomp')">Zaalcomp.</button>
+    <button class="nav-btn" onclick="showSection('lentecomp')">Lentecomp.</button>
+    <button class="nav-btn" onclick="showSection('oefenwedstrijden')">Oefenwedstr.</button>
+    <button class="nav-btn invoer-btn" onclick="showSection('invoer')">＋ Wedstrijd</button>
+    <button class="nav-btn" onclick="showSection('spelers')">Speelsters</button>
+    <button class="nav-btn" onclick="showSection('tegenstanders')">Tegenstanders</button>
+  </nav>
+</div>
+
+<main class="main">
+  <div class="section active" id="totaal"></div>
+  <div class="section" id="voorcomp"></div>
+  <div class="section" id="najaarscomp"></div>
+  <div class="section" id="zaalcomp"></div>
+  <div class="section" id="lentecomp"></div>
+  <div class="section" id="oefenwedstrijden"></div>
+  <div class="section" id="invoer"></div>
+  <div class="section" id="spelers"></div>
+  <div class="section" id="tegenstanders"></div>
+  <div class="section" id="setup"></div>
+</main>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const COMPS = [
+  { id: 'voorcomp', naam: 'Voorcompetitie' },
+  { id: 'najaarscomp', naam: 'Najaarscompetitie' },
+  { id: 'zaalcomp', naam: 'Zaalcompetitie' },
+  { id: 'lentecomp', naam: 'Lentecompetitie' },
+  { id: 'oefenwedstrijden', naam: 'Oefenwedstrijden' },
+];
+
+let db = null;
+let state = {
+  spelers: [],
+  wedstrijden: {},
+  poulewedstrijden: {},
+  tegenstanders: {}
+};
+let currentSection = 'totaal';
+let extraGoalRows = 0;
+
+// ── Firebase config (stored in localStorage after setup) ──
+function getConfig() {
+  try { return JSON.parse(localStorage.getItem('mo11_firebase')); } catch(e){ return null; }
+}
+function saveConfig(cfg) {
+  localStorage.setItem('mo11_firebase', JSON.stringify(cfg));
+}
+
+async function initFirebase(config) {
+  const app = initializeApp(config, 'mo11');
+  db = getDatabase(app);
+  document.getElementById('statusDot').style.background = '#5DCAA5';
+  document.getElementById('statusText').textContent = 'Live';
+
+  // ── Cache buster: force reload if new version deployed ──
+  const APP_VERSION = '202606101029';
+  const storedVersion = sessionStorage.getItem('mo11_version');
+  if (storedVersion && storedVersion !== APP_VERSION) {
+    sessionStorage.setItem('mo11_version', APP_VERSION);
+    location.reload(true);
+    return;
+  }
+  sessionStorage.setItem('mo11_version', APP_VERSION);
+
+  // Real-time sync
+  onValue(ref(db, 'mo11'), (snap) => {
+    if (snap.exists()) {
+      const data = snap.val();
+      state.spelers = data.spelers || state.spelers;
+      state.wedstrijden = data.wedstrijden || {};
+      state.poulewedstrijden = data.poulewedstrijden || {};
+      state.tegenstanders = data.tegenstanders || {};
+    }
+    hideLoading();
+    render(currentSection);
+  });
+}
+
+async function save() {
+  if (!db) return;
+  await set(ref(db, 'mo11'), state);
+}
+
+// ── UI helpers ──
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2500);
+}
+
+window.showSection = function(id) {
+  currentSection = id;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const navIds = ['totaal','voorcomp','najaarscomp','zaalcomp','lentecomp','oefenwedstrijden','invoer','spelers','tegenstanders'];
+  const idx = navIds.indexOf(id);
+  if (idx >= 0) document.querySelectorAll('.nav-btn')[idx].classList.add('active');
+  render(id);
+}
+
+function render(id) {
+  if (id === 'totaal') renderTotaal();
+  else if (id === 'invoer') renderInvoer();
+  else if (id === 'spelers') renderSpelers();
+  else if (id === 'tegenstanders') renderTegenstanders();
+  else if (id === 'setup') renderSetup();
+  else renderComp(id);
+}
+
+// ── Stats ──
+function allWedstrijden() {
+  const all = [];
+  Object.values(state.wedstrijden).forEach(w => all.push(w));
+  return all;
+}
+
+function wedstrijdenVoor(compId) {
+  return Object.values(state.wedstrijden).filter(w => w.competitie === compId);
+}
+
+function resultaat(w) {
+  if (w.dv > w.dt) return 'W';
+  if (w.dv < w.dt) return 'V';
+  return 'G';
+}
+
+function getStats(ws) {
+  let g=0,v=0,d=0,dv=0,dt=0;
+  ws.forEach(w => {
+    const r = resultaat(w);
+    if(r==='W') g++;
+    else if(r==='V') v++;
+    else d++;
+    dv += w.dv; dt += w.dt;
+  });
+  return { gespeeld:ws.length, gewonnen:g, verloren:v, gelijk:d, voor:dv, tegen:dt, saldo:dv-dt, punten:g*3+d };
+}
+
+function getTopscorers(ws) {
+  const map = {};
+  ws.forEach(w => {
+    (w.goals||[]).forEach(g => {
+      if(!map[g.s]) map[g.s]={goals:0,sc:0,sb:0,assists:0};
+      map[g.s].goals++;
+      if(g.sc) map[g.s].sc++;
+      if(g.sb) map[g.s].sb++;
+      if(g.a) {
+        if(!map[g.a]) map[g.a]={goals:0,sc:0,sb:0,assists:0};
+        map[g.a].assists++;
+      }
+    });
+  });
+  return Object.entries(map).sort((a,b)=>b[1].goals-a[1].goals||b[1].assists-a[1].assists);
+}
+
+// ── Render metrics ──
+function htmlMetrics(s) {
+  const pct = s.gespeeld ? Math.round(s.punten/(s.gespeeld*3)*100) : 0;
+  const saldoClass = s.saldo > 0 ? 'green' : s.saldo < 0 ? 'red' : '';
+  return `<div class="metric-grid">
+    <div class="metric"><div class="metric-label">Gespeeld</div><div class="metric-value">${s.gespeeld}</div></div>
+    <div class="metric"><div class="metric-label">Gewonnen</div><div class="metric-value green">${s.gewonnen}</div></div>
+    <div class="metric"><div class="metric-label">Gelijk</div><div class="metric-value amber">${s.gelijk}</div></div>
+    <div class="metric"><div class="metric-label">Verloren</div><div class="metric-value red">${s.verloren}</div></div>
+    <div class="metric"><div class="metric-label">Doelsaldo</div><div class="metric-value ${saldoClass}">${s.saldo>0?'+':''}${s.saldo}</div><div class="metric-sub">${s.voor}–${s.tegen}</div></div>
+    <div class="metric"><div class="metric-label">Voor</div><div class="metric-value green">${s.voor}</div></div>
+    <div class="metric"><div class="metric-label">Tegen</div><div class="metric-value red">${s.tegen}</div></div>
+  </div>`;
+}
+
+// ── Render wedstrijdtabel ──
+function htmlWedstrijden(ws) {
+  if (!ws.length) return `<p class="empty">Nog geen wedstrijden ingevoerd.</p>`;
+  const sorted = [...ws].sort((a,b)=>(b.datum||'').localeCompare(a.datum||''));
+  return `<table>
+    <thead><tr>
+      <th>Datum</th><th>Tegenstander</th>
+      <th class="hide-mob">T/U</th>
+      <th>Uitslag</th><th>R</th>
+      <th class="hide-mob">Scorers</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${sorted.map(w => {
+      const r = resultaat(w);
+      const scorers = (w.goals||[]).map(g =>
+        `${g.s}${g.sc?'<span class="badge badge-sc" style="margin-left:3px">SC</span>':''}${g.sb?'<span class="badge badge-sc" style="margin-left:3px;background:#EEE6FB;color:#5B1FA3">SB</span>':''}${g.a?`<span style="color:var(--text3);font-size:11px"> ▸${g.a}</span>`:''}`
+      ).join(', ');
+      const id = w.id;
+      return `<tr>
+        <td style="white-space:nowrap;font-size:12px">${w.datum||'–'}</td>
+        <td style="font-weight:500">${w.teg}</td>
+        <td class="hide-mob" style="font-size:12px;color:var(--text2)">${w.thu==='T'?'Thuis':'Uit'}</td>
+        <td><span class="score">${w.dv}–${w.dt}</span></td>
+        <td><span class="badge badge-${r}">${r}</span></td>
+        <td class="hide-mob" style="font-size:12px;max-width:200px;line-height:1.5">${scorers||'–'}</td>
+        <td><button class="btn-danger" onclick="deleteWedstrijd('${id}')">✕</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// ── Gecombineerde wedstrijdentabel (eigen + poule) ──
+function htmlAlleWedstrijden(compId) {
+  const eigen = wedstrijdenVoor(compId);
+  const poule = getPoulewedstrijden(compId);
+
+  // Merge into unified list
+  const alles = [
+    ...eigen.map(w => ({ datum: w.datum||'', soort: 'eigen', data: w })),
+    ...poule.map(w => ({ datum: w.datum||'', soort: 'poule', data: w }))
+  ].sort((a,b) => b.datum.localeCompare(a.datum));
+
+  if (!alles.length) return `<p class="empty">Nog geen wedstrijden ingevoerd.</p>`;
+
+  return `<table>
+    <thead><tr>
+      <th>Datum</th><th>Wedstrijd</th>
+      <th>Uitslag</th><th class="hide-mob">R</th>
+      <th class="hide-mob">Scorers</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${alles.map(({ soort, data: w }) => {
+      if (soort === 'eigen') {
+        const r = resultaat(w);
+        const thuisUit = w.thu === 'T' ? 'Thuis' : 'Uit';
+        const tegenstander = w.teg;
+        const matchLabel = w.thu === 'T'
+          ? `<span style="color:var(--green);font-weight:600">Rosmalen</span> vs ${tegenstander}`
+          : `${tegenstander} vs <span style="color:var(--green);font-weight:600">Rosmalen</span>`;
+        const scorers = (w.goals||[]).map(g =>
+          `${g.s}${g.sc?'<span class="badge badge-sc" style="margin-left:3px">SC</span>':''}${g.sb?'<span class="badge badge-sc" style="margin-left:3px;background:#EEE6FB;color:#5B1FA3">SB</span>':''}${g.a?`<span style="color:var(--text3);font-size:11px"> ▸${g.a}</span>`:''}`
+        ).join(', ');
+        const uitslag = w.thu === 'T' ? `${w.dv}–${w.dt}` : `${w.dt}–${w.dv}`;
+        return `<tr>
+          <td style="white-space:nowrap;font-size:12px">${w.datum||'–'}</td>
+          <td style="font-size:13px">${matchLabel}</td>
+          <td><span class="score">${uitslag}</span></td>
+          <td class="hide-mob"><span class="badge badge-${r}">${r}</span></td>
+          <td class="hide-mob" style="font-size:12px;max-width:180px;line-height:1.5">${scorers||'–'}</td>
+          <td style="display:flex;gap:4px">
+            <button class="btn-sm" onclick="openGoalsModal('${w.id}')" title="Doelpunten bewerken">⚽</button>
+            <button class="btn-danger" onclick="deleteWedstrijd('${w.id}')">✕</button>
+          </td>
+        </tr>`;
+      } else {
+        // poule wedstrijd
+        const s1 = w.s1, s2 = w.s2;
+        const rClass = s1 > s2 ? 'W' : s1 < s2 ? 'V' : 'G';
+        return `<tr style="color:var(--text2)">
+          <td style="white-space:nowrap;font-size:12px">${w.datum||'–'}</td>
+          <td style="font-size:13px">${w.t1} vs ${w.t2}</td>
+          <td><span class="score" style="font-size:14px">${w.s1}–${w.s2}</span></td>
+          <td class="hide-mob"><span style="font-size:11px;color:var(--text3)">poule</span></td>
+          <td class="hide-mob"></td>
+          <td><button class="btn-danger" onclick="deletePouleWedstrijd('${w.id}','${w.competitie}')">✕</button></td>
+        </tr>`;
+      }
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// ── Render topscorers ──
+function htmlTopscorers(topscore) {
+  if (!topscore.length) return `<p class="empty">Geen doelpunten geregistreerd.</p>`;
+  return `<table>
+    <thead><tr><th>#</th><th>Speelster</th><th>Goals</th><th>SC</th><th>SB</th><th>Assists</th></tr></thead>
+    <tbody>${topscore.map(([naam,s],i) => {
+      const rankClass = i===0?'gold':i===1?'silver':i===2?'bronze':'';
+      return `<tr>
+        <td class="pos ${rankClass}">${i+1}</td>
+        <td style="font-weight:500">${naam}</td>
+        <td><span style="font-family:'Syne';font-size:15px;font-weight:700">${s.goals}</span></td>
+        <td>${s.sc?`<span class="badge badge-sc">${s.sc}</span>`:'–'}</td>
+        <td>${s.sb?`<span class="badge badge-sc" style="background:#EEE6FB;color:#5B1FA3">${s.sb}</span>`:'–'}</td>
+        <td>${s.assists?`<span class="badge badge-assist">${s.assists}</span>`:'–'}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// ── Ranglijst ──
+function getPoulewedstrijden(compId) {
+  return Object.values(state.poulewedstrijden || {}).filter(w => w.competitie === compId);
+}
+
+function berekenStand(compId) {
+  const stand = {};
+  const ROSMALEN = 'Rosmalen MO11-1';
+
+  // Add Rosmalen's own matches
+  wedstrijdenVoor(compId).forEach(w => {
+    if (!stand[ROSMALEN]) stand[ROSMALEN] = {naam: ROSMALEN, g:0, w:0, gl:0, v:0, dv:0, dt:0, pts:0, rosmalen:true};
+    if (!stand[w.teg]) stand[w.teg] = {naam: w.teg, g:0, w:0, gl:0, v:0, dv:0, dt:0, pts:0, rosmalen:false};
+    stand[ROSMALEN].g++; stand[w.teg].g++;
+    stand[ROSMALEN].dv += w.dv; stand[ROSMALEN].dt += w.dt;
+    stand[w.teg].dv += w.dt; stand[w.teg].dt += w.dv;
+    if (w.dv > w.dt) { stand[ROSMALEN].w++; stand[ROSMALEN].pts+=3; stand[w.teg].v++; }
+    else if (w.dv < w.dt) { stand[w.teg].w++; stand[w.teg].pts+=3; stand[ROSMALEN].v++; }
+    else { stand[ROSMALEN].gl++; stand[ROSMALEN].pts+=1; stand[w.teg].gl++; stand[w.teg].pts+=1; }
+  });
+
+  // Add poule matches between other teams
+  getPoulewedstrijden(compId).forEach(w => {
+    if (!stand[w.t1]) stand[w.t1] = {naam: w.t1, g:0, w:0, gl:0, v:0, dv:0, dt:0, pts:0, rosmalen:false};
+    if (!stand[w.t2]) stand[w.t2] = {naam: w.t2, g:0, w:0, gl:0, v:0, dv:0, dt:0, pts:0, rosmalen:false};
+    stand[w.t1].g++; stand[w.t2].g++;
+    stand[w.t1].dv += w.s1; stand[w.t1].dt += w.s2;
+    stand[w.t2].dv += w.s2; stand[w.t2].dt += w.s1;
+    if (w.s1 > w.s2) { stand[w.t1].w++; stand[w.t1].pts+=3; stand[w.t2].v++; }
+    else if (w.s1 < w.s2) { stand[w.t2].w++; stand[w.t2].pts+=3; stand[w.t1].v++; }
+    else { stand[w.t1].gl++; stand[w.t1].pts+=1; stand[w.t2].gl++; stand[w.t2].pts+=1; }
+  });
+
+  return Object.values(stand).sort((a,b) => b.pts-a.pts || (b.dv-b.dt)-(a.dv-a.dt) || b.dv-a.dv);
+}
+
+function htmlRanglijstCompact(compId) {
+  const stand = berekenStand(compId);
+  if (!stand.length) return `<p class="empty" style="font-size:12px">Nog geen wedstrijden.</p>`;
+  return `<table class="stand-table totaal-ranglijst">
+    <thead><tr>
+      <th>#</th><th>Team</th><th class="hide-mob">G</th>
+      <th>Pts</th><th>Saldo</th>
+    </tr></thead>
+    <tbody>${stand.map((t,i) => {
+      const posClass = i===0?'p1':i===1?'p2':i===2?'p3':'';
+      const saldo = t.dv - t.dt;
+      return `<tr class="${t.rosmalen?'rosmalen-row':''}">
+        <td class="stand-pos ${posClass}">${i+1}</td>
+        <td style="font-weight:${t.rosmalen?'700':'400'};color:${t.rosmalen?'var(--green)':'var(--text)'}">${t.naam}</td>
+        <td class="hide-mob">${t.g}</td>
+        <td style="font-family:'Syne';font-weight:700">${t.pts}</td>
+        <td style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function htmlRanglijst(compId) {
+  const stand = berekenStand(compId);
+  if (!stand.length) return `<p class="empty">Nog geen wedstrijden — voeg tegenstanders toe via "Poule-uitslag invoeren".</p>`;
+  return `<table class="stand-table">
+    <thead><tr>
+      <th>#</th><th>Team</th><th>G</th><th>W</th><th>Gl</th><th>V</th>
+      <th>Pts</th><th>Saldo</th><th class="hide-mob">Voor</th><th class="hide-mob">Tegen</th>
+    </tr></thead>
+    <tbody>${stand.map((t,i) => {
+      const posClass = i===0?'p1':i===1?'p2':i===2?'p3':'';
+      const saldo = t.dv - t.dt;
+      return `<tr class="${t.rosmalen?'rosmalen-row':''}">
+        <td class="stand-pos ${posClass}">${i+1}</td>
+        <td style="font-weight:${t.rosmalen?'700':'400'};color:${t.rosmalen?'var(--green)':'var(--text)'}">${t.naam}</td>
+        <td>${t.g}</td><td>${t.w}</td><td>${t.gl}</td><td>${t.v}</td>
+        <td style="font-family:'Syne';font-weight:700">${t.pts}</td>
+        <td style="color:${saldo>=0?'var(--green)':'var(--red)'}">${saldo>=0?'+':''}${saldo}</td>
+        <td class="hide-mob">${t.dv}</td><td class="hide-mob">${t.dt}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function htmlPouleInvoer(compId) {
+  const pw = getPoulewedstrijden(compId);
+  // Build team options: tegenstanders lijst + Rosmalen
+  const tegList = (state.tegenstanders[compId] || []).slice().sort();
+  const allTeams = ['Rosmalen MO11-1', ...tegList];
+  const teamOpts = (sel='') => ['<option value="">– team –', ...allTeams.map(t=>`<option value="${t}" ${t===sel?'selected':''}>${t}</option>`)].join('');
+  return `
+    <div class="poule-invoer">
+      <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:8px">Uitslag invoeren</div>
+      <div class="poule-row" style="flex-wrap:wrap">
+        <input type="date" id="pw_datum_${compId}" value="${new Date().toISOString().slice(0,10)}" style="font-size:13px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface);color:var(--text)">
+        <select id="pw_t1_${compId}" style="flex:1;min-width:100px;font-size:13px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface);color:var(--text)">${teamOpts()}</select>
+        <input type="number" class="score-in" id="pw_s1_${compId}" value="0" min="0">
+        <span class="vs-label">–</span>
+        <input type="number" class="score-in" id="pw_s2_${compId}" value="0" min="0">
+        <select id="pw_t2_${compId}" style="flex:1;min-width:100px;font-size:13px;padding:6px 8px;border:1px solid var(--border-strong);border-radius:6px;background:var(--surface);color:var(--text)">${teamOpts()}</select>
+        <button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="slaPouleOp('${compId}')">Opslaan</button>
+      </div>
+    </div>`;
+}
+
+// ── Comp section ──
+function renderComp(id) {
+  const comp = COMPS.find(c => c.id===id);
+  const ws = wedstrijdenVoor(id);
+  const stats = getStats(ws);
+  const topscore = getTopscorers(ws);
+  document.getElementById(id).innerHTML = `
+    <div class="comp-header">
+      <div>
+        <div class="comp-sub">${ws.length} wedstrijd${ws.length!==1?'en':''}</div>
+        <div class="comp-title">${comp.naam}</div>
+      </div>
+    </div>
+    ${id !== 'oefenwedstrijden' ? `
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-header" style="margin-bottom:.75rem">
+        <div class="card-title">Ranglijst</div>
+        <button class="btn-sm" onclick="togglePouleInvoer('${id}')">＋ Poule-uitslag</button>
+      </div>
+      <div id="poule_invoer_${id}" style="display:none;margin-bottom:12px">${htmlPouleInvoer(id)}</div>
+      ${htmlRanglijst(id)}
+    </div>` : ''}
+    ${htmlMetrics(stats)}
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tab_w_${id}" onclick="switchTab('${id}','w')">Wedstrijden</button>
+      <button class="tab-btn" id="tab_t_${id}" onclick="switchTab('${id}','t')">Topscoorders</button>
+    </div>
+    <div class="card" id="pane_w_${id}">${htmlAlleWedstrijden(id)}</div>
+    <div class="card" id="pane_t_${id}" style="display:none">${htmlTopscorers(topscore)}</div>
+  `;
+}
+
+window.switchTab = function(id, pane) {
+  ['w','t'].forEach(p => {
+    document.getElementById(`tab_${p}_${id}`).classList.toggle('active', p===pane);
+    document.getElementById(`pane_${p}_${id}`).style.display = p===pane?'':'none';
+  });
+}
+
+window.togglePouleInvoer = function(compId) {
+  const el = document.getElementById('poule_invoer_' + compId);
+  el.style.display = el.style.display === 'none' ? '' : 'none';
+}
+
+window.slaPouleOp = async function(compId) {
+  const t1 = document.getElementById('pw_t1_' + compId).value.trim();
+  const t2 = document.getElementById('pw_t2_' + compId).value.trim();
+  const s1 = parseInt(document.getElementById('pw_s1_' + compId).value) || 0;
+  const s2 = parseInt(document.getElementById('pw_s2_' + compId).value) || 0;
+  if (!t1 || !t2) { toast('Vul beide teamnamen in'); return; }
+  if (t1 === t2) { toast('Teams mogen niet hetzelfde zijn'); return; }
+  const id = 'pw_' + Date.now();
+  if (!state.poulewedstrijden) state.poulewedstrijden = {};
+  const datum = document.getElementById('pw_datum_' + compId)?.value || '';
+  state.poulewedstrijden[id] = { id, competitie: compId, datum, t1, t2, s1, s2 };
+  await save();
+  toast('Uitslag opgeslagen ✓');
+  renderComp(compId);
+}
+
+window.deletePouleWedstrijd = async function(id, compId) {
+  if (!confirm('Uitslag verwijderen?')) return;
+  delete state.poulewedstrijden[id];
+  await save();
+  toast('Uitslag verwijderd');
+  renderComp(compId);
+}
+
+// ── Totaal ──
+function renderTotaal() {
+  const all = allWedstrijden();
+  const stats = getStats(all);
+  const topscore = getTopscorers(all);
+
+  // Ranglijsten van de 4 competities (niet oefenwedstrijden) — 2 per rij
+  const rangItems = COMPS.filter(comp => comp.id !== 'oefenwedstrijden').map(comp => {
+    const ws = wedstrijdenVoor(comp.id);
+    const stand = berekenStand(comp.id);
+    const inhoud = (!stand.length && !ws.length)
+      ? `<p class="empty" style="font-size:12px">Nog geen wedstrijden ingevoerd.</p>`
+      : htmlRanglijstCompact(comp.id);
+    return `<div class="card" style="min-width:0">
+      <div class="card-header" style="margin-bottom:.75rem">
+        <div class="card-title" style="cursor:pointer;text-decoration:underline;text-underline-offset:3px" onclick="showSection('${comp.id}')">${comp.naam}</div>
+      </div>
+      ${inhoud}
+    </div>`;
+  });
+
+  // Pair them into rows of 2
+  const ranglijsten = rangItems.reduce((rows, item, i) => {
+    if (i % 2 === 0) rows.push([item]);
+    else rows[rows.length-1].push(item);
+    return rows;
+  }, []).map(row =>
+    `<div style="display:grid;grid-template-columns:repeat(${row.length},1fr);gap:12px;margin-bottom:12px">${row.join('')}</div>`
+  ).join('');
+
+  document.getElementById('totaal').innerHTML = `
+    <div class="page-title">Totaal overzicht</div>
+    ${htmlMetrics(stats)}
+    ${ranglijsten}
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Topscoorders — alle competities</div>
+      </div>
+      ${htmlTopscorers(topscore)}
+    </div>
+  `;
+}
+
+// ── Invoer ──
+function renderInvoer() {
+  extraGoalRows = 0;
+  const compOpts = COMPS.map(c => `<option value="${c.id}">${c.naam}</option>`).join('');
+  const spOpts = state.spelers.map(s => `<option value="${s}">${s}</option>`).join('');
+  document.getElementById('invoer').innerHTML = `
+    <div class="page-title">Wedstrijd invoeren</div>
+    <div class="card">
+      <div class="form-section">
+        <div class="form-section-title">Wedstrijd details</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Competitie</label>
+            <select id="f_comp" onchange="updateTegenstanders()">${compOpts}</select>
+          </div>
+          <div class="form-group">
+            <label>Datum</label>
+            <input type="date" id="f_datum" value="${new Date().toISOString().slice(0,10)}">
+          </div>
+          <div class="form-group">
+            <label>Thuis / Uit</label>
+            <select id="f_thu"><option value="T">Thuis</option><option value="U">Uit</option></select>
+          </div>
+          <div class="form-group">
+            <label>Tegenstander</label>
+            <select id="f_teg" onchange="updateTegenstander()">
+              <option value="">– selecteer tegenstander –</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Doelpunten voor</label>
+            <input type="number" id="f_dv" min="0" value="0">
+          </div>
+          <div class="form-group">
+            <label>Doelpunten tegen</label>
+            <input type="number" id="f_dt" min="0" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">Doelpunten registreren</div>
+        <div id="goals_container"></div>
+        <button class="btn-sm" onclick="addGoalRow()">+ doelpunt toevoegen</button>
+      </div>
+      <button class="btn-primary" onclick="slaOp()">Wedstrijd opslaan</button>
+    </div>
+  `;
+  updateTegenstanders();
+}
+
+window.addGoalRow = function() {
+  const spOpts = ['<option value="">– scorende speelster –', ...state.spelers.map(s=>`<option value="${s}">${s}</option>`)].join('');
+  const asOpts = ['<option value="">Assist: geen</option>', ...state.spelers.map(s=>`<option value="${s}">${s}</option>`)].join('');
+  const id = 'g_' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'goal-row'; div.id = id;
+  div.innerHTML = `
+    <select class="g_sp">${spOpts}</select>
+    <label class="sc-toggle"><input type="checkbox" class="g_sc"> Strafcorner</label>
+    <label class="sc-toggle"><input type="checkbox" class="g_sb"> Strafbal</label>
+    <select class="g_as">${asOpts}</select>
+    <button class="btn-danger" onclick="document.getElementById('${id}').remove()">✕</button>
+  `;
+  document.getElementById('goals_container').appendChild(div);
+}
+
+window.slaOp = async function() {
+  const teg = document.getElementById('f_teg').value.trim();
+  if (!teg) { toast('Vul een tegenstander in!'); return; }
+  const goals = [];
+  document.querySelectorAll('.goal-row').forEach(row => {
+    const sp = row.querySelector('.g_sp').value;
+    const sc = row.querySelector('.g_sc').checked;
+    const sb = row.querySelector('.g_sb').checked;
+    const as = row.querySelector('.g_as').value;
+    if (sp) goals.push({ s:sp, sc, sb, a:as||null });
+  });
+  const id = 'w_' + Date.now();
+  const w = {
+    id,
+    competitie: document.getElementById('f_comp').value,
+    datum: document.getElementById('f_datum').value,
+    thu: document.getElementById('f_thu').value,
+    teg,
+    dv: parseInt(document.getElementById('f_dv').value)||0,
+    dt: parseInt(document.getElementById('f_dt').value)||0,
+    goals
+  };
+  if (!state.wedstrijden) state.wedstrijden = {};
+  state.wedstrijden[id] = w;
+  await save();
+  toast('Wedstrijd opgeslagen ✓');
+  showSection(w.competitie);
+}
+
+window.deleteWedstrijd = async function(id) {
+  if (!confirm('Wedstrijd verwijderen?')) return;
+  const comp = state.wedstrijden[id]?.competitie;
+  delete state.wedstrijden[id];
+  await save();
+  toast('Wedstrijd verwijderd');
+  if (comp) showSection(comp);
+}
+
+// ── Tegenstanders ──
+window.updateTegenstanders = function() {
+  const compId = document.getElementById('f_comp')?.value;
+  if (!compId) return;
+  const sel = document.getElementById('f_teg');
+  if (!sel) return;
+  const lijst = (state.tegenstanders[compId] || []).slice().sort();
+  sel.innerHTML = '<option value="">– selecteer tegenstander –</option>'
+    + lijst.map(t => `<option value="${t}">${t}</option>`).join('')
+    + '<option value="__nieuw__">＋ Nieuwe tegenstander toevoegen…</option>';
+}
+
+window.updateTegenstander = function() {
+  const sel = document.getElementById('f_teg');
+  if (sel.value === '__nieuw__') {
+    const naam = prompt('Naam nieuwe tegenstander:');
+    if (naam && naam.trim()) {
+      voegTegenstanderToe(document.getElementById('f_comp').value, naam.trim(), sel);
+    } else {
+      sel.value = '';
+    }
+  }
+}
+
+async function voegTegenstanderToe(compId, naam, sel) {
+  if (!state.tegenstanders[compId]) state.tegenstanders[compId] = [];
+  if (!state.tegenstanders[compId].includes(naam)) {
+    state.tegenstanders[compId].push(naam);
+    await save();
+    toast(`${naam} toegevoegd`);
+  }
+  updateTegenstanders();
+  if (sel) sel.value = naam;
+}
+
+// ── Spelers ──
+function renderSpelers() {
+  document.getElementById('spelers').innerHTML = `
+    <div class="page-title">Speelsters</div>
+    <div class="card">
+
+      <div style="display:flex;gap:8px;margin-bottom:1rem">
+        <input type="text" id="new_sp" placeholder="Naam nieuwe speelster" style="flex:1;font-family:'DM Sans';font-size:14px;padding:9px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none">
+        <button class="btn-primary" onclick="addSpeler()">Toevoegen</button>
+      </div>
+      <div id="speler_list">
+        ${state.spelers.map((s,i) => `
+          <div class="speler-item">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div class="speler-avatar">${s.slice(0,2).toUpperCase()}</div>
+              <span style="font-weight:500">${s}</span>
+            </div>
+            <button class="btn-danger" onclick="deleteSpeler(${i})">✕</button>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+window.addSpeler = async function() {
+  const n = document.getElementById('new_sp').value.trim();
+  if (!n) return;
+  state.spelers.push(n);
+  await save();
+  toast(`${n} toegevoegd`);
+  renderSpelers();
+}
+
+window.deleteSpeler = async function(i) {
+  if (!confirm(`${state.spelers[i]} verwijderen?`)) return;
+  state.spelers.splice(i,1);
+  await save();
+  renderSpelers();
+}
+
+// ── Tegenstander beheer (onderdeel van spelers-pagina) ──
+function htmlTegstandBeheer() {
+  return COMPS.filter(comp => comp.id !== 'oefenwedstrijden').map(comp => {
+    const lijst = (state.tegenstanders[comp.id] || []).slice().sort();
+    return `<div style="margin-bottom:1.25rem">
+      <div style="font-size:13px;font-weight:600;color:var(--text2);margin-bottom:8px">${comp.naam}</div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <input type="text" id="new_teg_${comp.id}" placeholder="Naam tegenstander"
+          style="flex:1;font-family:'DM Sans';font-size:14px;padding:8px 12px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--surface);color:var(--text);outline:none">
+        <button class="btn-primary" style="font-size:13px;padding:8px 14px" onclick="addTegenstander('${comp.id}')">Toevoegen</button>
+      </div>
+      <div>${lijst.length ? lijst.map(t => `
+        <div class="speler-item">
+          <div style="display:flex;align-items:center;gap:10px">
+            <div class="speler-avatar" style="background:var(--amber-light);color:#8B5E0A">${t.slice(0,2).toUpperCase()}</div>
+            <span style="font-weight:500">${t}</span>
+          </div>
+          <div style="display:flex;gap:6px">
+            <button class="btn-sm" onclick="hernoem('${comp.id}','${t}')">✏️</button>
+            <button class="btn-danger" onclick="deleteTegenstander('${comp.id}','${t}')">✕</button>
+          </div>
+        </div>`).join('') : `<p style="font-size:13px;color:var(--text3);padding:6px 0">Nog geen tegenstanders ingevoerd.</p>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+window.addTegenstander = async function(compId) {
+  const input = document.getElementById('new_teg_' + compId);
+  const naam = input.value.trim();
+  if (!naam) return;
+  if (!state.tegenstanders[compId]) state.tegenstanders[compId] = [];
+  if (state.tegenstanders[compId].includes(naam)) { toast('Al in de lijst'); return; }
+  state.tegenstanders[compId].push(naam);
+  await save();
+  toast(`${naam} toegevoegd`);
+  renderSpelers();
+}
+
+window.deleteTegenstander = async function(compId, naam) {
+  if (!confirm(`${naam} verwijderen uit de lijst?`)) return;
+  state.tegenstanders[compId] = (state.tegenstanders[compId] || []).filter(t => t !== naam);
+  await save();
+  toast(`${naam} verwijderd`);
+  renderSpelers();
+}
+
+window.hernoem = async function(compId, oudNaam) {
+  const nieuwNaam = prompt(`Nieuwe naam voor "${oudNaam}":`, oudNaam);
+  if (!nieuwNaam || !nieuwNaam.trim() || nieuwNaam.trim() === oudNaam) return;
+  const n = nieuwNaam.trim();
+  // Update tegenstanders lijst
+  const idx = (state.tegenstanders[compId] || []).indexOf(oudNaam);
+  if (idx !== -1) state.tegenstanders[compId][idx] = n;
+  // Update alle wedstrijden van Rosmalen met die tegenstander
+  Object.values(state.wedstrijden).forEach(w => {
+    if (w.competitie === compId && w.teg === oudNaam) w.teg = n;
+  });
+  // Update poule-wedstrijden
+  Object.values(state.poulewedstrijden || {}).forEach(w => {
+    if (w.competitie === compId) {
+      if (w.t1 === oudNaam) w.t1 = n;
+      if (w.t2 === oudNaam) w.t2 = n;
+    }
+  });
+  await save();
+  toast(`"${oudNaam}" hernoemd naar "${n}"`);
+  renderTegenstanders();
+}
+
+// ── Tegenstanders pagina ──
+function renderTegenstanders() {
+  document.getElementById('tegenstanders').innerHTML = `
+    <div class="page-title">Tegenstanders</div>
+    <div class="card">
+      ${htmlTegstandBeheer()}
+    </div>
+  `;
+}
+
+// ── Setup ──
+function renderSetup() {
+  document.getElementById('setup').innerHTML = `
+    <div class="firebase-setup">
+      <div class="card">
+        <h2 style="margin-bottom:.75rem">🔧 Firebase instellen</h2>
+        <p>Om gegevens te delen tussen telefoon, computer en andere coaches heb je een gratis Firebase-database nodig. Dit is eenmalig instellen (5 minuten).</p>
+        <ol>
+          <li>Ga naar <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a></li>
+          <li>Maak een nieuw project aan (bijv. "mo11-hockey")</li>
+          <li>Ga naar <strong>Realtime Database</strong> → <em>Create database</em> → kies <em>test mode</em></li>
+          <li>Ga naar <strong>Project settings</strong> → scroll naar <em>Your apps</em> → voeg een web-app toe</li>
+          <li>Kopieer de configuratie-gegevens hieronder in:</li>
+        </ol>
+        <div class="form-group" style="margin-bottom:8px"><label>apiKey</label><input class="setup-input" id="cfg_apiKey" placeholder="AIza..."></div>
+        <div class="form-group" style="margin-bottom:8px"><label>authDomain</label><input class="setup-input" id="cfg_authDomain" placeholder="mo11-hockey.firebaseapp.com"></div>
+        <div class="form-group" style="margin-bottom:8px"><label>databaseURL</label><input class="setup-input" id="cfg_dbUrl" placeholder="https://mo11-hockey-default-rtdb.firebaseio.com"></div>
+        <div class="form-group" style="margin-bottom:16px"><label>projectId</label><input class="setup-input" id="cfg_projectId" placeholder="mo11-hockey"></div>
+        <button class="btn-primary" onclick="saveSetup()">Opslaan & verbinden</button>
+      </div>
+    </div>
+  `;
+}
+
+window.saveSetup = function() {
+  const cfg = {
+    apiKey: document.getElementById('cfg_apiKey').value.trim(),
+    authDomain: document.getElementById('cfg_authDomain').value.trim(),
+    databaseURL: document.getElementById('cfg_dbUrl').value.trim(),
+    projectId: document.getElementById('cfg_projectId').value.trim(),
+    storageBucket: document.getElementById('cfg_projectId').value.trim()+'.appspot.com',
+    messagingSenderId: '000000000000',
+    appId: '1:000000000000:web:000000000000'
+  };
+  if (!cfg.apiKey || !cfg.databaseURL) { toast('Vul minimaal apiKey en databaseURL in'); return; }
+  saveConfig(cfg);
+  toast('Configuratie opgeslagen — pagina wordt herladen…');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// ── Init ──
+async function init() {
+  const cfg = {
+    apiKey: "AIzaSyASwlioZ6JaGQX8UNWnC0UpS1b2nUbxVsQ",
+    authDomain: "mo12-1.firebaseapp.com",
+    databaseURL: "https://mo12-1-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "mo12-1",
+    storageBucket: "mo12-1.firebasestorage.app",
+    messagingSenderId: "909639587636",
+    appId: "1:909639587636:web:0a4dbb6f2e073636903761"
+  };
+  await initFirebase(cfg);
+}
+
+
+window.openGoalsModal = function(wid) {
+  const w = state.wedstrijden[wid];
+  if (!w) return;
+  const spOpts = (sel='') => ['<option value="">– speelster –', ...state.spelers.map(s=>`<option value="${s}" ${s===sel?'selected':''}>${s}</option>`)].join('');
+  const asOpts = (sel='') => ['<option value="">Assist: geen</option>', ...state.spelers.map(s=>`<option value="${s}" ${s===sel?'selected':''}>${s}</option>`)].join('');
+  const goalsHtml = (w.goals||[]).map((g,i) => `
+    <div class="goal-row" id="mg_${i}">
+      <select class="g_sp">${spOpts(g.s)}</select>
+      <label class="sc-toggle"><input type="checkbox" class="g_sc" ${g.sc?'checked':''}> SC</label>
+      <label class="sc-toggle"><input type="checkbox" class="g_sb" ${g.sb?'checked':''}> SB</label>
+      <select class="g_as">${asOpts(g.a||'')}</select>
+      <button class="btn-danger" onclick="this.closest('.goal-row').remove()">✕</button>
+    </div>`).join('');
+  const r = resultaat(w);
+  document.getElementById('goals_modal_inner').innerHTML = `
+    <div class="modal-header">
+      <div class="modal-title">${w.datum||''} — ${w.teg} (${w.dv}–${w.dt})</div>
+      <button class="btn-danger" onclick="closeGoalsModal()">✕</button>
+    </div>
+    <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text3);margin-bottom:10px">Doelpunten Rosmalen</div>
+    <div id="modal_goals">${goalsHtml}</div>
+    <button class="btn-sm" style="margin-bottom:1rem" onclick="addModalGoalRow('${wid}')">+ doelpunt toevoegen</button>
+    <br>
+    <button class="btn-primary" onclick="saveGoalsModal('${wid}')">Opslaan</button>
+  `;
+  document.getElementById('goals_modal').style.display = 'flex';
+}
+
+window.addModalGoalRow = function(wid) {
+  const spOpts = ['<option value="">– speelster –', ...state.spelers.map(s=>`<option value="${s}">${s}</option>`)].join('');
+  const asOpts = ['<option value="">Assist: geen</option>', ...state.spelers.map(s=>`<option value="${s}">${s}</option>`)].join('');
+  const id = 'mg_' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'goal-row'; div.id = id;
+  div.innerHTML = `
+    <select class="g_sp">${spOpts}</select>
+    <label class="sc-toggle"><input type="checkbox" class="g_sc"> SC</label>
+    <label class="sc-toggle"><input type="checkbox" class="g_sb"> SB</label>
+    <select class="g_as">${asOpts}</select>
+    <button class="btn-danger" onclick="this.closest('.goal-row').remove()">✕</button>
+  `;
+  document.getElementById('modal_goals').appendChild(div);
+}
+
+window.saveGoalsModal = async function(wid) {
+  const goals = [];
+  document.querySelectorAll('#modal_goals .goal-row').forEach(row => {
+    const sp = row.querySelector('.g_sp').value;
+    const sc = row.querySelector('.g_sc').checked;
+    const sb = row.querySelector('.g_sb').checked;
+    const as = row.querySelector('.g_as').value;
+    if (sp) goals.push({ s:sp, sc, sb, a:as||null });
+  });
+  state.wedstrijden[wid].goals = goals;
+  await save();
+  toast('Doelpunten opgeslagen ✓');
+  closeGoalsModal();
+}
+
+window.closeGoalsModal = function(e) {
+  if (e && e.target !== document.getElementById('goals_modal')) return;
+  document.getElementById('goals_modal').style.display = 'none';
+}
+
+// Nav buttons setup
+document.querySelectorAll('.nav-btn').forEach((btn, i) => {
+  const ids = ['totaal','voorcomp','najaarscomp','zaalcomp','lentecomp','oefenwedstrijden','invoer','spelers','tegenstanders'];
+  btn.onclick = () => showSection(ids[i]);
+});
+
+init();
+</script>
+<div id="goals_modal" style="display:none" class="modal-overlay" onclick="closeGoalsModal(event)"><div class="modal" id="goals_modal_inner"></div></div>
+</body>
+</html>
